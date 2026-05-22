@@ -1,0 +1,9 @@
+{
+  "name": "kitchen-root",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix Kitchen",
+    "build": "npm run build --prefix Kitchen",
+    "preview": "npm run preview --prefix Kitchen"
+  }
+}

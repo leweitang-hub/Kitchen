@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { RouterLink } from 'vue-router'
 
 const showScrollTop = ref(false)
 
@@ -93,6 +94,8 @@ onUnmounted(() => {
           <a href="#">個人資料保護聲明</a>
           <span class="divider">|</span>
           <a href="#">隱私權政策</a>
+          <span class="divider">|</span>
+          <RouterLink to="/admin" class="admin-link">內容管理</RouterLink>
         </div>
         <p class="copyright">Copyright © 2026 Taiwan Sakura Corporation. All rights reserved.</p>
       </div>

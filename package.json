@@ -2,8 +2,11 @@
   "name": "kitchen-root",
   "private": true,
   "scripts": {
-    "dev": "npm run dev --prefix Kitchen",
+    "dev": "npm run dev:all --prefix Kitchen",
+    "dev:web": "npm run dev --prefix Kitchen",
+    "dev:api": "npm run dev:api --prefix Kitchen",
     "build": "npm run build --prefix Kitchen",
+    "start": "npm run start --prefix Kitchen",
     "preview": "npm run preview --prefix Kitchen"
   }
 }

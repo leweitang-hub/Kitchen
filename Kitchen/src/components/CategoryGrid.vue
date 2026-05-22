@@ -1,14 +1,13 @@
 <script setup>
-const emit = defineEmits(['select-category'])
+import { computed } from 'vue'
+import { useCatalogInject } from '../composables/useCatalogInject.js'
+import { imageSrc } from '../utils/imageSrc.js'
 
-const categories = [
-  { id: 'hood', title: '除油煙機', desc: '近吸、歐化與流線系列', image: '/images/range_hood.png', anchor: 'recommend-hood' },
-  { id: 'stove', title: '瓦斯爐', desc: '檯面爐、台爐與嵌入爐', image: '/images/gas_stove.png', anchor: 'recommend-stove' },
-  { id: 'dryer', title: '殺菌烘碗機', desc: '落地、吊掛與嵌門板式', image: '/images/dish_dryer.png', anchor: 'recommend-dryer' },
-  { id: 'ih', title: 'IH感應爐', desc: '智慧觸控、雙口與單口爐', image: '/images/ih_stove.png', anchor: 'recommend-ih' },
-  { id: 'washer', title: '洗碗機', desc: '全嵌式與半嵌式洗碗機', image: '/images/dishwasher.png', anchor: 'recommend-washer' },
-  { id: 'oven', title: '烤箱與電器收納櫃', desc: '嵌入式蒸烤箱與收納櫃', image: '/images/oven_cabinet.png', anchor: 'recommend-oven' }
-]
+const emit = defineEmits(['select-category'])
+const catalog = useCatalogInject()
+
+const categories = computed(() => catalog.value.categories)
+const categoryIntro = computed(() => catalog.value.site?.category_intro ?? '')
 
 const handleCategoryClick = (anchor) => {
   emit('select-category', anchor)
@@ -22,21 +21,19 @@ const handleCategoryClick = (anchor) => {
       <div class="section-intro">
         <h2 class="section-title">廚房電器產品</h2>
         <div class="title-underline"></div>
-        <p class="section-desc">
-          櫻花擁有多樣化的廚電商品，其中包含除油煙機、烘碗機、瓦斯爐、洗碗機、IH爐、烤箱等產品，致力於為國人打造最舒適的廚房空間；其中也不乏各項創新技術與國際認證，還有獨家的 SAKURA iCare 服務，永久免費送油網以及永久免費廚房健檢，讓您擁有了櫻花廚電產品後再也無後顧之憂，家中廚房永保如新。
-        </p>
+        <p class="section-desc">{{ categoryIntro }}</p>
       </div>
 
       <!-- Categories Grid -->
       <div class="grid-layout">
         <div 
           v-for="cat in categories" 
-          :key="cat.id" 
+          :key="cat.id"
           class="category-card"
           @click="handleCategoryClick(cat.anchor)"
         >
           <div class="card-image-wrap">
-            <img :src="cat.image" :alt="cat.title" class="cat-img">
+            <img :src="imageSrc(cat.image)" :alt="cat.title" class="cat-img">
           </div>
           <div class="card-info">
             <h3 class="cat-title">{{ cat.title }}</h3>

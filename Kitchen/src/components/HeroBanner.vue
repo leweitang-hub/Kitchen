@@ -1,12 +1,18 @@
 <script setup>
-// No complex logic needed, purely aesthetic and content rendering
+import { computed } from 'vue'
+import { useCatalogInject } from '../composables/useCatalogInject.js'
+import { imageSrc } from '../utils/imageSrc.js'
+
+const catalog = useCatalogInject()
+const site = computed(() => catalog.value.site)
+const heroImage = computed(() => imageSrc(site.value.hero_image))
 </script>
 
 <template>
   <section class="hero-banner">
     <!-- Ken Burns zoom image effect -->
     <div class="banner-image-container">
-      <img src="/images/kitchen_hero_banner.png" alt="櫻花奢華廚房電器" class="banner-img">
+      <img :src="heroImage" alt="櫻花奢華廚房電器" class="banner-img">
       <div class="banner-overlay"></div>
     </div>
 
@@ -14,8 +20,8 @@
     <div class="banner-content container">
       <div class="glass-card animate-fade-in">
         <span class="sub-tag">SAKURA KITCHEN APPLIANCES</span>
-        <h1 class="main-title">廚房電器系列</h1>
-        <p class="desc">為您的家庭打造最高品質的廚房美學，體驗極致烹飪樂趣</p>
+        <h1 class="main-title">{{ site.hero_title }}</h1>
+        <p class="desc">{{ site.hero_subtitle }}</p>
         <a href="#category-grid" class="scroll-btn">
           <span>探索產品類別</span>
           <svg class="bounce-arrow" viewBox="0 0 24 24" width="20" height="20">

@@ -1,92 +1,34 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useCatalogInject } from '../composables/useCatalogInject.js'
+import { imageSrc } from '../utils/imageSrc.js'
 
+const catalog = useCatalogInject()
 const activeSection = ref('hood')
 const isSticky = ref(false)
 const selectedProduct = ref(null)
 
-const menuItems = [
-  { id: 'recommend-hood', label: '除油煙機', icon: '💨' },
-  { id: 'recommend-stove', label: '瓦斯爐', icon: '🔥' },
-  { id: 'recommend-dryer', label: '烘碗機', icon: '🍽️' },
-  { id: 'recommend-ih', label: 'IH感應爐', icon: '⚡' },
-  { id: 'recommend-washer', label: '洗碗機', icon: '💧' },
-  { id: 'recommend-oven', label: '烤箱與收納櫃', icon: '🍞' }
-]
+const menuItems = computed(() => catalog.value.menuItems)
+const recommendationData = computed(() => catalog.value.recommendationData)
 
-const recommendationData = {
-  hood: {
-    id: 'recommend-hood',
-    title: '除油煙機推薦',
-    bg: 'var(--light)',
-    items: [
-      { name: '近吸系列', tagline: '靠越近 越強勁', img: '/images/range_hood.png', spec: '採用近吸式結構，離油煙源更近，超強吸力瞬吸無餘，不漏煙。', features: ['智慧感應開關', '超大吸力排風', '易拆洗油網'] },
-      { name: '歐化系列', tagline: 'AI風控 全面掌控', img: '/images/range_hood.png', spec: '與歐洲設計接軌，流線型外觀與智慧型AI自動偵測調節排風速度。', features: ['AI智慧風控', '靜音除味運轉', '全平面不鏽鋼'] },
-      { name: '流線系列', tagline: '一體設計 好清潔', img: '/images/range_hood.png', spec: '圓弧流線一體成型設計，無接縫好擦拭，為台灣廚房量身打造。', features: ['一體成型集煙腔', '雙渦輪強效馬達', '省電LED照明'] }
-    ]
+watch(
+  menuItems,
+  (items) => {
+    if (items.length && !items.some((i) => i.id.replace('recommend-', '') === activeSection.value)) {
+      activeSection.value = items[0].id.replace('recommend-', '')
+    }
   },
-  stove: {
-    id: 'recommend-stove',
-    title: '瓦斯爐推薦',
-    bg: 'var(--gray-100)',
-    items: [
-      { name: '台爐系列', tagline: '經典設計 穩定火力', img: '/images/gas_stove.png', spec: '傳統獨立式放置，高效率節能燃燒器，提供穩定強勁的大火。', features: ['防漏清潔盤', '壓電式點火', '銅合金大火力爐頭'] },
-      { name: '檯面爐系列', tagline: '平整美觀 好搭配', img: '/images/gas_stove.png', spec: '完美內嵌於流理台，強化玻璃面板美觀大氣，清潔擦拭一氣呵成。', features: ['高質感強化玻璃', '雙環高效能烈火', '熄火安全保護裝置'] },
-      { name: '嵌入爐系列', tagline: '節省空間 整體性高', img: '/images/gas_stove.png', spec: '嵌入櫥櫃下方，下體拉絲不鏽鋼設計，提供極高性價比與美觀。', features: ['抽取式清潔盤', '專利雙環大雙火', '熄火自動切斷安全閥'] }
-    ]
-  },
-  dryer: {
-    id: 'recommend-dryer',
-    title: '殺菌烘碗機推薦',
-    bg: 'var(--light)',
-    items: [
-      { name: '落地系列', tagline: '大容量 抽屜好收納', img: '/images/dish_dryer.png', spec: '雙層大容量抽屜拉門，底部嵌入設計，適合中大型家庭，餐具輕鬆收納。', features: ['O3臭氧＋UV雙效殺菌', '滾輪滑軌滑順設計', '大液晶螢幕顯示'] },
-      { name: '吊掛系列', tagline: '省空間 觸控式操作', img: '/images/dish_dryer.png', spec: '吊掛於水槽上方，洗完碗盤順手放入，不佔用檯面工作空間空間。', features: ['智慧延遲關機', 'PTC陶瓷熱風循環', '防蟲防塵封閉式機體'] },
-      { name: '嵌板門系列', tagline: '融入櫃體 廚房一致', img: '/images/dish_dryer.png', spec: '可安裝廚具同色門板，完美隱藏在流理台中，保持空間美感。', features: ['高度密合嵌入式', '不鏽鋼內膽設計', '智慧烘乾程式'] }
-    ]
-  },
-  ih: {
-    id: 'recommend-ih',
-    title: 'IH感應爐推薦',
-    bg: 'var(--gray-100)',
-    items: [
-      { name: '單口系列', tagline: '精巧靈活 小宅首選', img: '/images/ih_stove.png', spec: '單口IH電磁加熱，高達90%熱效率，適合單身貴族、套房或輔助爐具。', features: ['定時定溫控制', '防乾燒安全偵測', '超薄黑晶玻璃面板'] },
-      { name: '雙口系列', tagline: '高功率 火力自由分配', img: '/images/ih_stove.png', spec: '雙口觸控式大功率加熱，智慧型定溫烹調，雙爐同時開工效率翻倍。', features: ['PowerBoost快速加熱', '橋接合併加熱區', '定時烹調自動關閉'] }
-    ]
-  },
-  washer: {
-    id: 'recommend-washer',
-    title: '洗碗機推薦',
-    bg: 'var(--light)',
-    items: [
-      { name: '半嵌式系列', tagline: '金屬控制面板 精緻美觀', img: '/images/dishwasher.png', spec: '外部露出金屬顯示面板，運轉狀態一目了然，並能嵌入櫥櫃同色飾板。', features: ['高溫銀離子殺菌烘乾', '多重清洗程式', '節能低耗水設計'] },
-      { name: '全嵌式系列', tagline: '完全隱形 保持廚房一體感', img: '/images/dishwasher.png', spec: '控制面板完全隱藏在門頂，關上門後與櫥櫃渾然一體，視覺效果滿分。', features: ['投影指示燈技術', '三層中式碗籃彈性調整', '超靜音變頻馬達'] }
-    ]
-  },
-  oven: {
-    id: 'recommend-oven',
-    title: '烤箱與電器收納櫃推薦',
-    bg: 'var(--gray-100)',
-    items: [
-      { name: '烤箱系列', tagline: '專業烘烤 智慧控溫', img: '/images/oven_cabinet.png', spec: '大容量嵌入式專業電烤箱，配備立體熱風循環，讓食材均勻受熱。', features: ['3D旋風立體烘烤', '雙層防燙隔熱玻璃門', '內建多種智慧烹調食譜'] },
-      { name: '電器收納櫃系列', tagline: '抽拉底板 嵌入式收納', img: '/images/oven_cabinet.png', spec: '專為電磁爐、電子鍋設計的隱藏收納櫃，配備專利排煙通風防潮散熱功能。', features: ['智慧型強排散熱系統', '托盤防滑防傾斜結構', '全彩觸控隱藏開關'] }
-    ]
-  }
-}
+  { immediate: true }
+)
 
-// Scroll Handling
 const handleScroll = () => {
-  // Sticky nav logic
   const navElement = document.getElementById('sticky-nav-bar')
   if (navElement) {
-    const navTop = navElement.offsetTop
-    const offset = window.scrollY
-    isSticky.value = offset > (navTop - 80)
+    isSticky.value = window.scrollY > navElement.offsetTop - 80
   }
 
-  // Scrollspy logic
   const scrollPosition = window.scrollY + 200
-  for (const item of menuItems) {
+  for (const item of menuItems.value) {
     const el = document.getElementById(item.id)
     if (el) {
       const top = el.offsetTop
@@ -168,7 +110,7 @@ const closeModal = () => {
               @click="openProductModal(item)"
             >
               <div class="card-img-container">
-                <img :src="item.img" :alt="item.name" class="card-img">
+                <img :src="imageSrc(item.img)" :alt="item.name" class="card-img">
                 <div class="card-hover-overlay">
                   <span class="overlay-btn">查看規格</span>
                 </div>
@@ -205,7 +147,7 @@ const closeModal = () => {
           
           <div class="modal-grid">
             <div class="modal-image-area">
-              <img :src="selectedProduct.img" :alt="selectedProduct.name" class="modal-img">
+              <img :src="imageSrc(selectedProduct.img)" :alt="selectedProduct.name" class="modal-img">
             </div>
             <div class="modal-info-area">
               <span class="modal-tag">推薦商品系列</span>
